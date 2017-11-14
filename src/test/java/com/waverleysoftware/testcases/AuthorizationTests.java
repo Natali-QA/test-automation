@@ -1,24 +1,43 @@
 package com.waverleysoftware.testcases;
 
+import com.waverleysoftware.assertions.CustomAssertions;
+import io.github.sskorol.core.DataSupplier;
+import one.util.streamex.StreamEx;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.DataProvider;
+import com.waverleysoftware.model.User;
+import io.github.sskorol.core.DataSupplier;
+import org.testng.ITestContext;
+import org.testng.annotations.*;
 
-public class AuthorizationTests extends BaseTest {
+import java.lang.reflect.Method;
+
+import static com.waverleysoftware.utils.JsonUtils.jsonToEntity;
+import static java.util.Optional.ofNullable;
+
+public class AuthorizationTests {
+
+
+    @DataSupplier(name = "My provider", flatMap = true)
+    public StreamEx getData(Method method) {
+        return ofNullable(method.getDeclaredAnnotation(Data.class))
+                .map(Data::source)
+                .map(source -> jsonToEntity(source, User.class))
+                .orElseGet(User::dummy);
+    }
 
     @BeforeMethod
-    public void beforeEachMethod() {
-        System.out.println("AuthorizationTests: before method");
+    public void setUp(ITestContext context, Method method) {
+        System.out.println(method.getName());
+        System.out.println(method.getDeclaredAnnotation(Test.class));
+        System.out.println(context.getCurrentXmlTest().getParameter("browser"));
     }
 
-    @AfterMethod
-    public void afterEachMethod() {
-        System.out.println("AuthorizationTests: after method");
-    }
-
-    @Test
-    public void userShoulbBeAuthorizedWithValidCredentials() {
-        System.out.println("User is authorized");
+    @Data(source = "data.json")
+    @Test(dataProvider = "My provider")
+    public void userShoulbBeAuthorizedWithValidCredentials(final User user) {
+        CustomAssertions.assertThat(user).hasUsername("Dana");
     }
 
     @Test
