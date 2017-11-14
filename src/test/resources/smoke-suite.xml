@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Smoke suite" thread-count="1">
+<test name="Safari group">
+    <classes>
+        <class name="com.waverleysoftware.testcases.AuthorizationTests">
+            <methods>
+                <include name="userShoulbBeAuthorizedWithValidCredentials"/>
+                <include name="userShoulbBeAuthorizedWithInvalidCredentials"/>
+                <include name="userShoulbBeAuthorizedWithInvalidName"/>
+                <include name="userShoulbBeAuthorizedWithInvalidPassword"/>
+            </methods>
+        </class>
+        <class name="com.waverleysoftware.testcases.CreateAccountTests"/>
+    </classes>
+</test>
+</suite>
